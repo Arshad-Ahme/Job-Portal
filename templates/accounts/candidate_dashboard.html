@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+ 
+{% block title %}Candidate Dashboard{% endblock %}
+ 
+{% block content %}
+<h2 class="mb-4">Welcome, {{ user.username }}</h2>
+<div class="row g-3">
+  <div class="col-md-4">
+    <a href="{% url 'job_list' %}" class="text-decoration-none">
+      <div class="card text-center shadow-sm h-100">
+        <div class="card-body">
+          <i class="bi bi-search fs-1 text-primary"></i>
+          <h5 class="mt-2 text-dark">Find Jobs</h5>
+        </div>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-4">
+    <a href="{% url 'my_applications' %}" class="text-decoration-none">
+      <div class="card text-center shadow-sm h-100">
+        <div class="card-body">
+          <i class="bi bi-file-earmark-text fs-1 text-primary"></i>
+          <h5 class="mt-2 text-dark">My Applications</h5>
+        </div>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-4">
+    <a href="{% url 'saved_jobs' %}" class="text-decoration-none">
+      <div class="card text-center shadow-sm h-100">
+        <div class="card-body">
+          <i class="bi bi-bookmark fs-1 text-primary"></i>
+          <h5 class="mt-2 text-dark">Saved Jobs</h5>
+        </div>
+      </div>
+    </a>
+  </div>
+</div>
+{% endblock %}

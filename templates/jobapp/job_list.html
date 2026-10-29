@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %}Find Jobs - JobPortal{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Find Jobs</h2>
+
+<form method="get" class="card card-body shadow-sm mb-4">
+  <div class="row g-2">
+    <div class="col-md-5">
+      <input type="text" name="q" value="{{ q }}" class="form-control"
+             placeholder="Job title, keyword or company">
+    </div>
+    <div class="col-md-4">
+      <input type="text" name="location" value="{{ location }}" class="form-control"
+             placeholder="Location">
+    </div>
+    <div class="col-md-3">
+      <select name="category" class="form-select">
+        <option value="">All categories</option>
+        {% for c in categories %}
+          <option value="{{ c.id }}" {% if selected_category == c.id|stringformat:"s" %}selected{% endif %}>
+            {{ c.name }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-4">
+      <select name="job_type" class="form-select">
+        <option value="">All job types</option>
+        {% for value, label in job_types %}
+          <option value="{{ value }}" {% if selected_job_type == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-4">
+      <select name="experience" class="form-select">
+        <option value="">Any experience</option>
+        {% for value, label in experience_levels %}
+          <option value="{{ value }}" {% if selected_experience == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-4 d-flex gap-2">
+      <button type="submit" class="btn btn-primary flex-grow-1">
+        <i class="bi bi-search"></i> Search
+      </button>
+      <a href="{% url 'job_list' %}" class="btn btn-outline-secondary">Clear</a>
+    </div>
+  </div>
+</form>
+
+<p class="text-muted">{{ page_obj.paginator.count }} job{{ page_obj.paginator.count|pluralize }} found</p>
+
+{% if page_obj %}
+  <div class="row g-3">
+    {% for job in page_obj %}
+    <div class="col-md-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h5 class="card-title mb-1">
+            <a href="{% url 'job_detail' job.pk %}" class="text-decoration-none">{{ job.title }}</a>
+          </h5>
+          <p class="text-muted mb-2">{{ job.company_name }}</p>
+          <div class="mb-2">
+            <span class="badge bg-primary">{{ job.get_job_type_display }}</span>
+            <span class="badge bg-secondary">{{ job.category.name }}</span>
+            <span class="badge bg-light text-dark border">{{ job.get_experience_level_display }}</span>
+          </div>
+          <p class="mb-1"><i class="bi bi-geo-alt"></i> {{ job.location }}</p>
+          {% if job.salary_min and job.salary_max %}
+            <p class="mb-1"><i class="bi bi-cash"></i> {{ job.salary_min }} - {{ job.salary_max }}</p>
+          {% endif %}
+          <small class="text-muted">Apply before {{ job.deadline|date:"d M Y" }}</small>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% if page_obj.has_other_pages %}
+  <nav class="mt-4">
+    <ul class="pagination justify-content-center">
+      {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?{% if query_string %}{{ query_string }}&{% endif %}page={{ page_obj.previous_page_number }}">Previous</a>
+        </li>
+      {% endif %}
+      <li class="page-item disabled">
+        <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+      </li>
+      {% if page_obj.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?{% if query_string %}{{ query_string }}&{% endif %}page={{ page_obj.next_page_number }}">Next</a>
+        </li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+{% else %}
+  <div class="text-center py-5">
+    <i class="bi bi-emoji-frown fs-1 text-muted"></i>
+    <h5 class="mt-3">No jobs match your search</h5>
+    <a href="{% url 'job_list' %}" class="btn btn-primary mt-2">Clear filters</a>
+  </div>
+{% endif %}
+{% endblock %}

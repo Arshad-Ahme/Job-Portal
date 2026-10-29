@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+ 
+{% block title %}Recruiter Dashboard{% endblock %}
+ 
+{% block content %}
+<h2 class="mb-1">Welcome, {{ user.username }}</h2>
+<p class="text-muted mb-4">{{ user.recruiter_profile.company_name }}</p>
+<div class="row g-3">
+  <div class="col-md-4">
+    <a href="{% url 'job_create' %}" class="text-decoration-none">
+      <div class="card text-center shadow-sm h-100">
+        <div class="card-body">
+          <i class="bi bi-plus-circle fs-1 text-primary"></i>
+          <h5 class="mt-2 text-dark">Post a Job</h5>
+        </div>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-4">
+    <a href="{% url 'my_jobs' %}" class="text-decoration-none">
+      <div class="card text-center shadow-sm h-100">
+        <div class="card-body">
+          <i class="bi bi-briefcase fs-1 text-primary"></i>
+          <h5 class="mt-2 text-dark">My Jobs</h5>
+        </div>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-4">
+    <div class="card text-center shadow-sm h-100">
+      <div class="card-body">
+        <i class="bi bi-people fs-1 text-primary"></i>
+        <h5 class="mt-2">Applicants</h5>
+        <p class="text-muted">Coming in Module 4</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+ 

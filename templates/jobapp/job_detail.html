@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ job.title }} - JobPortal{% endblock %}
+
+{% block content %}
+<a href="{% url 'job_list' %}" class="text-decoration-none">
+  <i class="bi bi-arrow-left"></i> Back to jobs
+</a>
+
+<div class="row mt-3 g-4">
+  <div class="col-lg-8">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h2 class="mb-1">{{ job.title }}</h2>
+        <p class="text-muted fs-5">{{ job.company_name }}</p>
+        <div class="mb-3">
+          <span class="badge bg-primary">{{ job.get_job_type_display }}</span>
+          <span class="badge bg-secondary">{{ job.category.name }}</span>
+          <span class="badge bg-light text-dark border">{{ job.get_experience_level_display }}</span>
+        </div>
+        <h5>About the job</h5>
+        <div>{{ job.description|linebreaks }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        {% if job.recruiter.recruiter_profile.logo %}
+          <img src="{{ job.recruiter.recruiter_profile.logo.url }}" alt="{{ job.company_name }}"
+               class="img-fluid mb-3" style="max-height: 80px;">
+        {% endif %}
+        <ul class="list-unstyled mb-3">
+          <li class="mb-2"><i class="bi bi-geo-alt"></i> {{ job.location }}</li>
+          {% if job.salary_min and job.salary_max %}
+            <li class="mb-2"><i class="bi bi-cash"></i> {{ job.salary_min }} - {{ job.salary_max }}</li>
+          {% endif %}
+          <li class="mb-2"><i class="bi bi-calendar-event"></i> Apply before {{ job.deadline|date:"d M Y" }}</li>
+          <li><i class="bi bi-clock"></i> Posted {{ job.created_at|timesince }} ago</li>
+        </ul>
+
+        {% if job.is_open %}
+          {% if user.is_authenticated %}
+            {% if user.is_candidate %}
+              {% if already_applied %}
+                <button class="btn btn-success w-100 mb-2" disabled>
+                  <i class="bi bi-check-circle"></i> Already applied
+                </button>
+                <a href="{% url 'my_applications' %}" class="btn btn-outline-primary w-100">View my applications</a>
+              {% else %}
+                <a href="{% url 'apply_job' job.pk %}" class="btn btn-primary w-100">Apply now</a>
+              {% endif %}
+            {% else %}
+              <div class="alert alert-secondary mb-0 text-center">Recruiter accounts can't apply to jobs</div>
+            {% endif %}
+          {% else %}
+            <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary w-100">Login to apply</a>
+          {% endif %}
+        {% else %}
+          <div class="alert alert-secondary mb-0 text-center">This job is closed</div>
+        {% endif %}
+
+        {% if user.is_authenticated and user.is_candidate %}
+          <form method="post" action="{% url 'toggle_save_job' job.pk %}" class="mt-2">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-secondary w-100">
+              {% if is_saved %}
+                <i class="bi bi-bookmark-fill"></i> Saved (click to remove)
+              {% else %}
+                <i class="bi bi-bookmark"></i> Save job
+              {% endif %}
+            </button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
